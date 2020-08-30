@@ -1,6 +1,10 @@
 package memorydriver
 
-import "github.com/apiles/unikv"
+import (
+	"fmt"
+
+	"github.com/apiles/unikv"
+)
 
 // Constructor constructs new memory drivers
 func Constructor(prefix string, ctx unikv.DriverContextRaw) (unikv.Driver, error) {
@@ -14,5 +18,8 @@ var Descriptor = &unikv.DriverDescriptor{
 }
 
 func init() {
+	if unikv.Version != Version {
+		panic(fmt.Errorf("Unmatched version with unikv, expected APIv%d", Version))
+	}
 	unikv.RegisterDriver(Descriptor)
 }
