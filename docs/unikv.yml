@@ -1,0 +1,9 @@
+namespaces:
+  default:
+    prefix: $!empty
+    buckets:
+      main:
+        prefix: main
+        driver: memory
+        context:
+          buffer: 12
