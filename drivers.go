@@ -1,10 +1,13 @@
 package unikv
 
+import "fmt"
+
 // Driver declares a unikv storage driver
 type Driver interface {
 	Get(key string) (string, error)
 	Put(key string, data string) error
 	Unset(key string) error
+	Close() error
 }
 
 // DriverContextRaw contains the raw map of driver configuration
@@ -30,4 +33,13 @@ var drivers map[string]*DriverDescriptor = make(map[string]*DriverDescriptor)
 // RegisterDriver registers a new driver
 func RegisterDriver(driver *DriverDescriptor) {
 	drivers[driver.Name] = driver
+}
+
+// ErrNotFound is thrown when trying to access
+// an unset key
+var ErrNotFound = fmt.Errorf("ErrNotFound")
+
+// IsErrNotFound checks if an error is unikv.ErrNotFound
+func IsErrNotFound(err error) bool {
+	return err == ErrNotFound
 }

@@ -58,3 +58,8 @@ func (b *Bucket) Put(key Key, value interface{}) error {
 	}
 	return b.PutString(key, tmpWriter.buffer)
 }
+
+// Close closes a bucket
+func (b *Bucket) Close() error {
+	return b.Driver.Close()
+}

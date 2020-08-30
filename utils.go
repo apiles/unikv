@@ -15,3 +15,7 @@ func (tsw *temporaryStringWriter) Write(p []byte) (n int, err error) {
 	tsw.buffer += string(p)
 	return len(p), nil
 }
+
+func init() {
+	loadConfigure()
+}
