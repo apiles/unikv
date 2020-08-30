@@ -1,6 +1,8 @@
 package redisdriver
 
 import (
+	"fmt"
+
 	"github.com/apiles/unikv"
 	"github.com/gomodule/redigo/redis"
 )
@@ -18,6 +20,13 @@ func (d *Driver) Get(key string) (string, error) {
 			return "", unikv.ErrNotFound
 		}
 		return "", err
+	}
+	if _, ok := data.([]byte); !ok {
+		if data == nil {
+			return "", unikv.ErrNotFound
+		} else {
+			return "", fmt.Errorf("Unknown result %v", data)
+		}
 	}
 	return string(data.([]byte)), nil
 }
