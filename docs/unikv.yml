@@ -8,5 +8,14 @@ namespaces:
       main:
         prefix: main
         driver: memory
+        context: {}
+      testredis:
+        prefix: easy
+        driver: redis
         context:
-          buffer: 12
+          server: redis://127.0.0.1:6379
+          options:
+            username: string
+            password: string
+            tls: true
+            database: 0

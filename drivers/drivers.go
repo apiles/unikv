@@ -3,4 +3,5 @@ package drivers
 
 import (
 	_ "github.com/apiles/unikv/drivers/memory"
+	_ "github.com/apiles/unikv/drivers/redis"
 )
