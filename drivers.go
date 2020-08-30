@@ -15,12 +15,12 @@ type DriverContextRaw map[string]interface{}
 // of the driver
 type DriverDescriptor struct {
 	Name        string
-	Constructor func(bucket string, ctx DriverContextRaw) (Driver, error)
+	Constructor func(prefix string, ctx DriverContextRaw) (Driver, error)
 }
 
 // Construct a new driver instance
-func (ds *DriverDescriptor) Construct(bucket string, ctx DriverContextRaw) (Driver, error) {
-	drv, err := ds.Constructor(bucket, ctx)
+func (ds *DriverDescriptor) Construct(prefix string, ctx DriverContextRaw) (Driver, error) {
+	drv, err := ds.Constructor(prefix, ctx)
 	// TODO: add specific error processing logic
 	return drv, err
 }

@@ -15,3 +15,9 @@ const DefaultConfigureFile = "unikv.yml"
 // PrefixSeparator separates different parts of a
 // key's prefix
 const PrefixSeparator = ":"
+
+// DefaultDriver determines the default driver to
+// use when not specified
+//
+// The driver must be without context
+const DefaultDriver = "memory"

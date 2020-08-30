@@ -1,3 +1,6 @@
+global:
+  driver: memory
+  context: {}
 namespaces:
   default:
     prefix: $!empty

@@ -6,3 +6,12 @@ func concatPrefix(prefix string, str string) string {
 	}
 	return str
 }
+
+type temporaryStringWriter struct {
+	buffer string
+}
+
+func (tsw *temporaryStringWriter) Write(p []byte) (n int, err error) {
+	tsw.buffer += string(p)
+	return len(p), nil
+}
