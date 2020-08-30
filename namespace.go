@@ -1,5 +1,7 @@
 package unikv
 
+import "fmt"
+
 // Namespace is the namespace type
 type Namespace struct {
 	Name   string
@@ -26,7 +28,7 @@ func NewNamespace(name string) *Namespace {
 
 // NewBucket creates a new bucket on a namespace
 func (ns *Namespace) NewBucket(name string) (*Bucket, error) {
-	bckconf, ok := configure.Namespaces[name]
+	bckconf, ok := configure.Namespaces[ns.Name]
 	var conf *ConfigureBuckets
 	prefix := concatPrefix(ns.Prefix, name)
 	if ok {
@@ -49,6 +51,9 @@ func (ns *Namespace) NewBucket(name string) (*Bucket, error) {
 		Name:          name,
 		Prefix:        prefix,
 		NamespaceName: ns.Name,
+	}
+	if _, ok := drivers[conf.Driver]; !ok {
+		return nil, fmt.Errorf("Unknow driver %s", conf.Driver)
 	}
 	drv, err := drivers[conf.Driver].Construct(prefix, conf.Context)
 	if err != nil {
