@@ -56,7 +56,7 @@ func Constructor(prefix string, ctx unikv.DriverContextRaw) (unikv.Driver, error
 	return NewDriver(context)
 }
 
-// Descriptor describes memory driver
+// Descriptor describes redis driver
 var Descriptor = &unikv.DriverDescriptor{
 	Name:        "redis",
 	Constructor: Constructor,

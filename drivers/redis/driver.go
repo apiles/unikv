@@ -19,7 +19,7 @@ func (d *Driver) Get(key string) (string, error) {
 		}
 		return "", err
 	}
-	return data.(string), nil
+	return string(data.([]byte)), nil
 }
 
 // Put puts data
