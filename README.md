@@ -60,3 +60,7 @@ func main() {
 ## API Docs
 
 Go to <https://pkg.go.dev/github.com/apiles/unikv>.
+
+## UniKVd
+
+See <docs/unikvd-protocol.md>.
