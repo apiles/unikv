@@ -1,5 +1,5 @@
 package unikv
 
 func init() {
-	loadConfigure()
+	// loadConfigure()
 }

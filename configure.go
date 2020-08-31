@@ -9,9 +9,12 @@ import (
 
 // Configure is unikv's configure structure
 type Configure struct {
-	Default    *ConfigureDefault               `yaml:"default"`
-	Namespaces map[string]*ConfigureNamespaces `yaml:"namespaces"`
+	Separator  string                          `yaml:"separator" json:"separator"`
+	Default    *ConfigureDefault               `yaml:"default" json:"default"`
+	Namespaces map[string]*ConfigureNamespaces `yaml:"namespaces" json:"namespaces"`
 }
+
+var loadedConfigure bool = false
 
 // GetNamespaceList returns the list of namespaces
 func (c *Configure) GetNamespaceList() []string {
@@ -31,15 +34,15 @@ func (c *Configure) GetNamespace(name string) (*ConfigureNamespaces, bool) {
 // ConfigureDefault is the default segment
 // in unikv's configure
 type ConfigureDefault struct {
-	Driver  string           `yaml:"driver"`
-	Context DriverContextRaw `yaml:"context"`
+	Driver  string           `yaml:"driver" json:"driver"`
+	Context DriverContextRaw `yaml:"context" json:"context"`
 }
 
 // ConfigureNamespaces is the namespace segment
 // in unikv's configure
 type ConfigureNamespaces struct {
-	Prefix  string                       `yaml:"prefix"`
-	Buckets map[string]*ConfigureBuckets `yaml:"buckets"`
+	Prefix  string                       `yaml:"prefix" json:"prefix"`
+	Buckets map[string]*ConfigureBuckets `yaml:"buckets" json:"buckets"`
 }
 
 // GetBucketList returns bucket list
@@ -60,9 +63,9 @@ func (c *ConfigureNamespaces) GetBucket(name string) (*ConfigureBuckets, bool) {
 // ConfigureBuckets is the bucket segment
 // in unikv's configure
 type ConfigureBuckets struct {
-	Prefix  string           `yaml:"prefix"`
-	Driver  string           `yaml:"driver"`
-	Context DriverContextRaw `yaml:"context"`
+	Prefix  string           `yaml:"prefix" json:"prefix"`
+	Driver  string           `yaml:"driver" json:"driver"`
+	Context DriverContextRaw `yaml:"context" json:"context"`
 }
 
 func determineConfigureFilePath() string {
@@ -81,6 +84,7 @@ func loadConfigure() {
 		panic(err)
 	}
 	configure = &Configure{
+		Separator: PrefixSeparator,
 		Default: &ConfigureDefault{
 			Driver:  DefaultDriver,
 			Context: make(DriverContextRaw),
@@ -91,9 +95,18 @@ func loadConfigure() {
 	if err != nil {
 		panic(err)
 	}
+	loadedConfigure = true
 }
 
 // GetConfigure returns the configure structure
 func GetConfigure() *Configure {
+	if !loadedConfigure {
+		loadConfigure()
+	}
 	return configure
+}
+
+// ReloadConfigure reloads the configure
+func ReloadConfigure() {
+	loadConfigure()
 }

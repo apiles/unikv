@@ -12,6 +12,7 @@ type Bucket struct {
 	Prefix        string
 	NamespaceName string
 	Driver        Driver
+	namespace     *Namespace
 }
 
 // GetString gets string value
@@ -22,6 +23,11 @@ func (b *Bucket) GetString(key interface{}) (string, error) {
 // PutString puts string value
 func (b *Bucket) PutString(key interface{}, str string) error {
 	return b.Driver.Put(NewKey(key).String(), str)
+}
+
+// Unset unsets a value
+func (b *Bucket) Unset(key interface{}) error {
+	return b.Driver.Unset(NewKey(key).String())
 }
 
 // GetInt gets int value
@@ -61,5 +67,6 @@ func (b *Bucket) Put(key interface{}, value interface{}) error {
 
 // Close closes a bucket
 func (b *Bucket) Close() error {
+	defer delete(b.namespace.buckets, b.Name)
 	return b.Driver.Close()
 }

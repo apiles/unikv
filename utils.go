@@ -5,7 +5,7 @@ import "encoding/json"
 // ConcatPrefix concats two prefixes together
 func ConcatPrefix(prefix string, str string) string {
 	if prefix != "" {
-		return prefix + PrefixSeparator + str
+		return prefix + configure.Separator + str
 	}
 	return str
 }

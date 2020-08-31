@@ -4,13 +4,14 @@ import "fmt"
 
 // Namespace is the namespace type
 type Namespace struct {
-	Name   string
-	Prefix string
+	Name    string
+	Prefix  string
+	buckets map[string]*Bucket
 }
 
 // NewNamespace creates a new namespace
 func NewNamespace(name string) *Namespace {
-	conf, ok := configure.Namespaces[name]
+	conf, ok := GetConfigure().Namespaces[name]
 	prefix := name
 	if ok {
 		if conf.Prefix != "" {
@@ -21,13 +22,17 @@ func NewNamespace(name string) *Namespace {
 		}
 	}
 	return &Namespace{
-		Name:   name,
-		Prefix: prefix,
+		Name:    name,
+		Prefix:  prefix,
+		buckets: make(map[string]*Bucket),
 	}
 }
 
 // NewBucket creates a new bucket on a namespace
 func (ns *Namespace) NewBucket(name string) (*Bucket, error) {
+	if _, ok := ns.buckets[name]; ok {
+		return ns.buckets[name], nil
+	}
 	bckconf, ok := configure.Namespaces[ns.Name]
 	var conf *ConfigureBuckets
 	prefix := concatPrefix(ns.Prefix, name)
@@ -51,6 +56,7 @@ func (ns *Namespace) NewBucket(name string) (*Bucket, error) {
 		Name:          name,
 		Prefix:        prefix,
 		NamespaceName: ns.Name,
+		namespace:     ns,
 	}
 	if _, ok := drivers[conf.Driver]; !ok {
 		return nil, fmt.Errorf("Unknow driver %s", conf.Driver)
@@ -60,5 +66,13 @@ func (ns *Namespace) NewBucket(name string) (*Bucket, error) {
 		return nil, err
 	}
 	rslt.Driver = drv
+	ns.buckets[name] = rslt
 	return rslt, nil
+}
+
+// Close closes all the buckets in a namespace
+func (ns *Namespace) Close() {
+	for k := range ns.buckets {
+		ns.buckets[k].Close()
+	}
 }

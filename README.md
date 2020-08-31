@@ -42,6 +42,7 @@ Then you can see this example:
 func main() {
     ns := unikv.NewNamespace("hello")
     bucket, err := ns.NewBucket("new")
+    defer bucket.Close()
     if err != nil {
         panic(err)
     }
