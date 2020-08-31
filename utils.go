@@ -2,11 +2,16 @@ package unikv
 
 import "encoding/json"
 
-func concatPrefix(prefix string, str string) string {
+// ConcatPrefix concats two prefixes together
+func ConcatPrefix(prefix string, str string) string {
 	if prefix != "" {
 		return prefix + PrefixSeparator + str
 	}
 	return str
+}
+
+func concatPrefix(prefix string, str string) string {
+	return ConcatPrefix(prefix, str)
 }
 
 type temporaryStringWriter struct {

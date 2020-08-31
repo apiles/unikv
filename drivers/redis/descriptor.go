@@ -53,7 +53,7 @@ func Constructor(prefix string, ctx unikv.DriverContextRaw) (unikv.Driver, error
 	if err != nil {
 		return nil, err
 	}
-	return NewDriver(context)
+	return NewDriver(prefix, context)
 }
 
 // Descriptor describes redis driver

@@ -13,6 +13,21 @@ type Configure struct {
 	Namespaces map[string]*ConfigureNamespaces `yaml:"namespaces"`
 }
 
+// GetNamespaceList returns the list of namespaces
+func (c *Configure) GetNamespaceList() []string {
+	var rslt []string
+	for k := range c.Namespaces {
+		rslt = append(rslt, k)
+	}
+	return rslt
+}
+
+// GetNamespace returns a specificated namespace from the list
+func (c *Configure) GetNamespace(name string) (*ConfigureNamespaces, bool) {
+	value, ok := c.Namespaces[name]
+	return value, ok
+}
+
 // ConfigureDefault is the default segment
 // in unikv's configure
 type ConfigureDefault struct {
@@ -25,6 +40,21 @@ type ConfigureDefault struct {
 type ConfigureNamespaces struct {
 	Prefix  string                       `yaml:"prefix"`
 	Buckets map[string]*ConfigureBuckets `yaml:"buckets"`
+}
+
+// GetBucketList returns bucket list
+func (c *ConfigureNamespaces) GetBucketList() []string {
+	var rslt []string
+	for k := range c.Buckets {
+		rslt = append(rslt, k)
+	}
+	return rslt
+}
+
+// GetBucket returns the bucket
+func (c *ConfigureNamespaces) GetBucket(name string) (*ConfigureBuckets, bool) {
+	b, ok := c.Buckets[name]
+	return b, ok
 }
 
 // ConfigureBuckets is the bucket segment
@@ -61,4 +91,9 @@ func loadConfigure() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// GetConfigure returns the configure structure
+func GetConfigure() *Configure {
+	return configure
 }

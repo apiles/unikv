@@ -9,11 +9,13 @@ import (
 
 // Driver is the memorydriver
 type Driver struct {
-	conn redis.Conn
+	conn   redis.Conn
+	prefix string
 }
 
 // Get gets data
 func (d *Driver) Get(key string) (string, error) {
+	key = unikv.ConcatPrefix(d.prefix, key)
 	data, err := d.conn.Do("GET", key)
 	if err != nil {
 		if err == redis.ErrNil {
@@ -33,24 +35,28 @@ func (d *Driver) Get(key string) (string, error) {
 
 // Put puts data
 func (d *Driver) Put(key string, value string) error {
+	key = unikv.ConcatPrefix(d.prefix, key)
 	_, err := d.conn.Do("SET", key, value)
 	return err
 }
 
 // Unset unsets data
 func (d *Driver) Unset(key string) error {
+	key = unikv.ConcatPrefix(d.prefix, key)
 	_, err := d.conn.Do("SET", key, "EX", "1")
 	return err
 }
 
 // Close closes driver
 func (d *Driver) Close() error {
-	return nil
+	return d.conn.Close()
 }
 
 // NewDriver creates a driver
-func NewDriver(ctx *DriverContext) (*Driver, error) {
-	drv := &Driver{}
+func NewDriver(prefix string, ctx *DriverContext) (*Driver, error) {
+	drv := &Driver{
+		prefix: prefix,
+	}
 	var err error
 	drv.conn, err = redis.DialURL(ctx.Server, ctx.Options...)
 	if err != nil {
