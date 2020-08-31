@@ -16,15 +16,21 @@ import (
 )
 
 var namespaces map[string]*unikv.Namespace
+var enableLog = true
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Println(`USAGE: unikvd [LISTEN_ADDR]`)
+	if len(os.Args) <= 2 {
+		fmt.Println(`USAGE: unikvd [LISTEN_ADDR] [--disable-log]`)
 		os.Exit(0)
 	}
 	reinit()
 	defer cleanup()
 	http.HandleFunc("/v1/", handle)
+	if len(os.Args) == 3 {
+		if os.Args[2] == "--disable-log" {
+			enableLog = false
+		}
+	}
 	fmt.Println("Listening on: ", os.Args[1])
 	err := http.ListenAndServe(os.Args[1], nil)
 	if err != nil {
@@ -91,7 +97,9 @@ var stats struct {
 
 func handle(rw http.ResponseWriter, r *http.Request) {
 	stats.totalRequests++
-	log.Printf("Request %s %s\r\n", r.Method, r.RequestURI)
+	if enableLog {
+		log.Printf("Request %s %s\r\n", r.Method, r.RequestURI)
+	}
 	rw.Header().Add("Server", "UniKVd")
 	uri := strings.Split(r.URL.RequestURI(), "?")[0]
 	sp := strings.Split(strings.Trim(uri, "/"), "/")

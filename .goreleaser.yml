@@ -1,3 +1,14 @@
 builds:
   - main: ./unikvd/
     id: "unikvd"
+    binary: unikvd
+    goos:
+      - linux
+      - darwin
+      - windows
+archives:
+  - files:
+      - README.md
+      - docs/*
+      - LICENSE
+      - unikv.yml
