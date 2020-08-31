@@ -95,11 +95,11 @@ func handle(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Server", "UniKVd")
 	uri := strings.Split(r.URL.RequestURI(), "?")[0]
 	sp := strings.Split(strings.Trim(uri, "/"), "/")
-	if len(sp) != 3 {
+	if len(sp) != 4 {
 		resp404(rw)
 		return
 	}
-	nsName, bucketName, key := sp[0], sp[1], sp[2]
+	nsName, bucketName, key := sp[1], sp[2], sp[3]
 	if nsName == "_system" {
 		switch bucketName {
 		case "lifecycle":
