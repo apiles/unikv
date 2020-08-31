@@ -1,8 +1,7 @@
 package persistentmemorydriver
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"encoding/gob"
 	"os"
 	"sync"
 
@@ -22,17 +21,22 @@ type Driver struct {
 
 // Commit commits changes to file
 func (d *Driver) Commit() error {
-	j, _ := json.Marshal(d.data)
-	return ioutil.WriteFile(d.filename, j, os.FileMode(d.filemode))
+	f, err := os.OpenFile(d.filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.FileMode(d.filemode))
+	if err != nil {
+		return err
+	}
+	enc := gob.NewEncoder(f)
+	return enc.Encode(&d.data)
 }
 
 // Load loads data from file
 func (d *Driver) Load() error {
-	f, err := ioutil.ReadFile(d.filename)
+	f, err := os.Open(d.filename)
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(f, &d.data)
+	dec := gob.NewDecoder(f)
+	return dec.Decode(&d.data)
 }
 
 // Get gets data

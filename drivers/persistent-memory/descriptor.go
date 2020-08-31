@@ -17,7 +17,8 @@ type DriverContext struct {
 // Constructor constructs new memory drivers
 func Constructor(prefix string, ctx unikv.DriverContextRaw) (unikv.Driver, error) {
 	context := &DriverContext{
-		Filemode:      0644,
+		Filename:      DefaultFilename,
+		Filemode:      DefaultFilemode,
 		CommitWhenPut: true,
 		LoadWhenGet:   false,
 	}

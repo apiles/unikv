@@ -23,7 +23,7 @@ namespaces:
         prefix: test
         driver: persistent-memory
         context:
-          filename: unikv.memory.json
+          filename: unikv.memory.bin
           filemode: 644
           commit_when_put: true
           load_when_get: false
