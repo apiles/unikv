@@ -1,0 +1,100 @@
+package persistentmemorydriver
+
+import (
+	"encoding/json"
+	"io/ioutil"
+	"os"
+	"sync"
+
+	"github.com/apiles/unikv"
+)
+
+// Driver is the memorydriver
+type Driver struct {
+	data          map[string]string
+	lock          *sync.Mutex
+	filename      string
+	filemode      int
+	commitWhenPut bool
+	loadWhenGet   bool
+	prefix        string
+}
+
+// Commit commits changes to file
+func (d *Driver) Commit() error {
+	j, _ := json.Marshal(d.data)
+	return ioutil.WriteFile(d.filename, j, os.FileMode(d.filemode))
+}
+
+// Load loads data from file
+func (d *Driver) Load() error {
+	f, err := ioutil.ReadFile(d.filename)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(f, &d.data)
+}
+
+// Get gets data
+func (d *Driver) Get(key string) (string, error) {
+	key = unikv.ConcatPrefix(d.prefix, key)
+	if d.loadWhenGet {
+		err := d.Load()
+		if err != nil {
+			return "", err
+		}
+	}
+	data, ok := d.data[key]
+	if !ok {
+		return "", unikv.ErrNotFound
+	}
+	return data, nil
+}
+
+// Put puts data
+func (d *Driver) Put(key string, value string) error {
+	key = unikv.ConcatPrefix(d.prefix, key)
+	d.data[key] = value
+	if d.commitWhenPut {
+		return d.Commit()
+	}
+	return nil
+}
+
+// Unset unsets data
+func (d *Driver) Unset(key string) error {
+	key = unikv.ConcatPrefix(d.prefix, key)
+	delete(d.data, key)
+	if d.commitWhenPut {
+		return d.Commit()
+	}
+	return nil
+}
+
+// Close closes driver
+func (d *Driver) Close() error {
+	return d.Commit()
+}
+
+// NewDriver creates a driver
+func NewDriver(prefix string, ctx *DriverContext) (*Driver, error) {
+	f, err := os.Open(ctx.Filename)
+	if os.IsNotExist(err) {
+		f, err = os.Create(ctx.Filename)
+	}
+	if err != nil {
+		return nil, err
+	}
+	f.Close()
+	drv := &Driver{
+		data:          make(map[string]string),
+		lock:          &sync.Mutex{},
+		filename:      ctx.Filename,
+		filemode:      ctx.Filemode,
+		commitWhenPut: ctx.CommitWhenPut,
+		loadWhenGet:   ctx.LoadWhenGet,
+		prefix:        prefix,
+	}
+	drv.Load()
+	return drv, nil
+}

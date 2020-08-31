@@ -19,3 +19,11 @@ namespaces:
             password: string
             tls: true
             database: 0
+      persistent:
+        prefix: test
+        driver: persistent-memory
+        context:
+          filename: unikv.memory.json
+          filemode: 644
+          commit_when_put: true
+          load_when_get: false

@@ -16,12 +16,12 @@ type Bucket struct {
 
 // GetString gets string value
 func (b *Bucket) GetString(key interface{}) (string, error) {
-	return b.Driver.Get(concatPrefix(b.Prefix, NewKey(key).String()))
+	return b.Driver.Get(NewKey(key).String())
 }
 
 // PutString puts string value
 func (b *Bucket) PutString(key interface{}, str string) error {
-	return b.Driver.Put(concatPrefix(b.Prefix, NewKey(key).String()), str)
+	return b.Driver.Put(NewKey(key).String(), str)
 }
 
 // GetInt gets int value
