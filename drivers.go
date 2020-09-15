@@ -7,6 +7,7 @@ type Driver interface {
 	Get(key string) (string, error)
 	Put(key string, data string) error
 	Unset(key string) error
+	List() (interface{}, error) // interface{} should be []unikv.Key or []string
 	Close() error
 }
 

@@ -2,6 +2,7 @@ package unikv
 
 import (
 	"encoding/gob"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -23,6 +24,26 @@ func (b *Bucket) GetString(key interface{}) (string, error) {
 // PutString puts string value
 func (b *Bucket) PutString(key interface{}, str string) error {
 	return b.Driver.Put(NewKey(key).String(), str)
+}
+
+// List lists keys
+func (b *Bucket) List() ([]Key, error) {
+	ks, err := b.Driver.List()
+	if err != nil {
+		return nil, err
+	}
+	switch ks.(type) {
+	case []Key:
+		return ks.([]Key), nil
+	case []string:
+		ksa := ks.([]string)
+		sl := make([]Key, len(ksa))
+		for i, v := range ksa {
+			sl[i] = NewKey(v)
+		}
+		return sl, nil
+	}
+	return nil, fmt.Errorf("Unknown driver error")
 }
 
 // Unset unsets a value

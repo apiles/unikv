@@ -1,6 +1,7 @@
 package memorydriver
 
 import (
+	"reflect"
 	"sync"
 
 	"github.com/apiles/unikv"
@@ -30,6 +31,11 @@ func (d *Driver) Put(key string, value string) error {
 func (d *Driver) Unset(key string) error {
 	d.data.Delete(key)
 	return nil
+}
+
+// List lists the keys
+func (d *Driver) List() (interface{}, error) {
+	return reflect.ValueOf(d.data).MapKeys(), nil
 }
 
 // Close closes driver
