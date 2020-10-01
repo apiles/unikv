@@ -3,6 +3,7 @@ package persistentmemorydriver
 import (
 	"encoding/gob"
 	"os"
+	"reflect"
 	"sync"
 
 	"github.com/apiles/unikv"
@@ -63,6 +64,11 @@ func (d *Driver) Put(key string, value string) error {
 		return d.Commit()
 	}
 	return nil
+}
+
+// List lists the keys
+func (d *Driver) List() (interface{}, error) {
+	return reflect.ValueOf(d.data).MapKeys(), nil
 }
 
 // Unset unsets data

@@ -72,6 +72,26 @@ func (d *Driver) Unset(key string) error {
 	return err
 }
 
+// List lists the keys
+func (d *Driver) List() (interface{}, error) {
+	data, err := d.conn.Do("KEYS", "*")
+	if err != nil {
+		if err == redis.ErrNil {
+			return "", unikv.ErrNotFound
+		}
+		if !d.reconnected {
+			d.connect()
+			d.reconnected = true
+			return d.List()
+		}
+		return "", err
+	}
+	if d.reconnected {
+		d.reconnected = false
+	}
+	return data, err
+}
+
 // Close closes driver
 func (d *Driver) Close() error {
 	return d.conn.Close()

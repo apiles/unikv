@@ -3,6 +3,7 @@ package unikv
 import (
 	"encoding/gob"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -40,6 +41,13 @@ func (b *Bucket) List() ([]Key, error) {
 		sl := make([]Key, len(ksa))
 		for i, v := range ksa {
 			sl[i] = NewKey(v)
+		}
+		return sl, nil
+	case []reflect.Value:
+		ksa := ks.([]reflect.Value)
+		sl := make([]Key, len(ksa))
+		for i, v := range ksa {
+			sl[i] = NewKey(v.String())
 		}
 		return sl, nil
 	}
