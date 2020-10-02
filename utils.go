@@ -1,6 +1,9 @@
 package unikv
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strings"
+)
 
 // ConcatPrefix concats two prefixes together
 func ConcatPrefix(prefix string, str string) string {
@@ -12,6 +15,11 @@ func ConcatPrefix(prefix string, str string) string {
 
 func concatPrefix(prefix string, str string) string {
 	return ConcatPrefix(prefix, str)
+}
+
+// TrimPrefix trims the prefix of the given string
+func TrimPrefix(prefix string, str string) string {
+	return strings.TrimPrefix(str, prefix)
 }
 
 type temporaryStringWriter struct {

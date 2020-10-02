@@ -19,7 +19,7 @@ var namespaces map[string]*unikv.Namespace
 var enableLog = true
 
 func main() {
-	if len(os.Args) <= 2 {
+	if len(os.Args) < 2 {
 		fmt.Println(`USAGE: unikvd [LISTEN_ADDR] [--disable-log]`)
 		os.Exit(0)
 	}
@@ -171,6 +171,15 @@ func handle(rw http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Method {
 	case "GET":
+		if key == "_list" {
+			rslt, err := bucket.List()
+			if err != nil {
+				resp500(rw, err.Error())
+				return
+			}
+			resp200(rw, rslt)
+			return
+		}
 		rslt, err := bucket.GetString(key)
 		if err == unikv.ErrNotFound {
 			resp404(rw)

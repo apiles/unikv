@@ -46,10 +46,12 @@ func (d *Driver) Get(key string) (string, error) {
 func (d *Driver) Put(key string, value string) error {
 	key = unikv.ConcatPrefix(d.prefix, key)
 	_, err := d.conn.Do("SET", key, value)
-	if !d.reconnected {
-		d.connect()
-		d.reconnected = true
-		return d.Put(key, value)
+	if err != nil {
+		if !d.reconnected {
+			d.connect()
+			d.reconnected = true
+			return d.Put(key, value)
+		}
 	}
 	if d.reconnected {
 		d.reconnected = false
@@ -61,10 +63,12 @@ func (d *Driver) Put(key string, value string) error {
 func (d *Driver) Unset(key string) error {
 	key = unikv.ConcatPrefix(d.prefix, key)
 	_, err := d.conn.Do("SET", key, "EX", "1")
-	if !d.reconnected {
-		d.connect()
-		d.reconnected = true
-		return d.Unset(key)
+	if err != nil {
+		if !d.reconnected {
+			d.connect()
+			d.reconnected = true
+			return d.Unset(key)
+		}
 	}
 	if d.reconnected {
 		d.reconnected = false
@@ -74,7 +78,7 @@ func (d *Driver) Unset(key string) error {
 
 // List lists the keys
 func (d *Driver) List() (interface{}, error) {
-	data, err := d.conn.Do("KEYS", "*")
+	data, err := d.conn.Do("KEYS", d.prefix+"*")
 	if err != nil {
 		if err == redis.ErrNil {
 			return "", unikv.ErrNotFound
@@ -89,7 +93,15 @@ func (d *Driver) List() (interface{}, error) {
 	if d.reconnected {
 		d.reconnected = false
 	}
-	return data, err
+	dat, ok := data.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("Invalid response from redis server")
+	}
+	var rslt []string = make([]string, len(dat))
+	for k, v := range dat {
+		rslt[k] = unikv.TrimPrefix(d.prefix, string(v.([]byte)))
+	}
+	return rslt, err
 }
 
 // Close closes driver

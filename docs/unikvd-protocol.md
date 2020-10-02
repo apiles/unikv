@@ -24,6 +24,8 @@ When you POST this address, the body will be the data.
 
 When you DELETE this address, the key will be deleted.
 
+When KEY is set to `_list`, a list of all the keys will be returned in JSON format.
+
 ## System Namespace
 
 When you get `/v1/_system/*`, you are visiting system namespace.

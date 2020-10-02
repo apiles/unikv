@@ -68,7 +68,18 @@ func (d *Driver) Put(key string, value string) error {
 
 // List lists the keys
 func (d *Driver) List() (interface{}, error) {
-	return reflect.ValueOf(d.data).MapKeys(), nil
+	if d.loadWhenGet {
+		err := d.Load()
+		if err != nil {
+			return nil, err
+		}
+	}
+	keys := reflect.ValueOf(d.data).MapKeys()
+	var rslt []string = make([]string, len(keys))
+	for k, v := range keys {
+		rslt[k] = unikv.TrimPrefix(d.prefix, v.String())
+	}
+	return rslt, nil
 }
 
 // Unset unsets data
